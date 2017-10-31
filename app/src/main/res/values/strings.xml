@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">AudioUpload</string>
+    <string name="button_pick">Pick local audio file</string>
+    <string name="button_record">Record audio</string>
+    <string name="upload">Upload</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+</resources>

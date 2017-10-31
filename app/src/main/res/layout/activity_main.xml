@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#eee"
+            android:divider="?android:dividerVertical"
+            android:showDividers="middle">
+
+            <Button
+                android:id="@+id/pick_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@android:drawable/ic_menu_gallery"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-condensed"
+                android:hint="@string/button_pick"
+                android:maxLines="2"
+                android:onClick="pickFile"
+                android:padding="8dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/record_button"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_mic"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-condensed"
+                android:hint="@string/button_record"
+                android:maxLines="2"
+                android:onClick="recordVideo"
+                android:padding="8dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColorHint="#c00"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/activity_main_ll_record"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/activity_main_iv_record_gif"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/recording_audio"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/activity_main_btn_record"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/ic_mic"
+                    android:text="@string/button_record"
+                    android:visibility="visible" />
+
+                <Button
+                    android:id="@+id/activity_main_btn_stop"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:clickable="false"
+                    android:drawableTop="@drawable/ic_stop"
+                    android:enabled="false"
+                    android:text="@string/stop"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/activity_main_btn_upload"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:drawableTop="@android:drawable/ic_menu_upload"
+            android:enabled="false"
+            android:visibility="gone"
+            android:text="@string/upload" />
+
+
+        <LinearLayout
+            android:id="@+id/activity_main_ll_player"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_200dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/activity_main_btn_play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:drawableTop="@android:drawable/ic_media_play"
+                android:text="@string/play" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/activity_main_tv_download_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_record"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|center"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:visibility="visible"-->
+        <!--app:srcCompat="@drawable/ic_mic"-->
+        <!--tools:ignore="VectorDrawableCompat" />-->
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_stop"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|center"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:visibility="gone"-->
+        <!--app:srcCompat="@android:drawable/ic_menu_save" />-->
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_play"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:visibility="gone"-->
+        <!--app:srcCompat="@android:drawable/ic_media_play" />-->
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_upload"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|center"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:visibility="gone"-->
+        <!--app:srcCompat="@android:drawable/ic_menu_upload" />-->
+
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_stream"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|start"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:visibility="visible"-->
+        <!--app:srcCompat="@android:drawable/ic_media_play"-->
+        <!--tools:ignore="VectorDrawableCompat" />-->
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

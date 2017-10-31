@@ -1,0 +1,231 @@
+{
+  "project_info": {
+    "project_number": "321594774742",
+    "firebase_url": "https://samplefirebase-20d5a.firebaseio.com",
+    "project_id": "samplefirebase-20d5a",
+    "storage_bucket": "samplefirebase-20d5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321594774742:android:a70c24a5267707a6",
+        "android_client_info": {
+          "package_name": "com.rakshith.cricketapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321594774742-96frc64mggg7gq5sjmf4v4r62rh5n9ca.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rakshith.cricketapp",
+            "certificate_hash": "4ae407054f6f19d16251e5bfae801df50dac7e05"
+          }
+        },
+        {
+          "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTlF4AwuO8cZelWw_BykZTz2u92hMo8Ho"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321594774742:android:e5897881594f3ca0",
+        "android_client_info": {
+          "package_name": "rakshith.com.sampleinapppurchase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321594774742-6v7u2c0f5th1t8ge40gpiodcjatt0eo5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rakshith.com.sampleinapppurchase",
+            "certificate_hash": "4ae407054f6f19d16251e5bfae801df50dac7e05"
+          }
+        },
+        {
+          "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTlF4AwuO8cZelWw_BykZTz2u92hMo8Ho"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321594774742:android:b8708b4e4ed094ab",
+        "android_client_info": {
+          "package_name": "rakshith.com.copraapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321594774742-bmdu733jfvambgvt622i6hj9nafmt9ob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rakshith.com.copraapp",
+            "certificate_hash": "4ae407054f6f19d16251e5bfae801df50dac7e05"
+          }
+        },
+        {
+          "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTlF4AwuO8cZelWw_BykZTz2u92hMo8Ho"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321594774742:android:cd9d9c6c832fabef",
+        "android_client_info": {
+          "package_name": "rakshith.com.copra"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321594774742-bask2npoes2pq41tn828soegk2lsagok.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rakshith.com.copra",
+            "certificate_hash": "4ae407054f6f19d16251e5bfae801df50dac7e05"
+          }
+        },
+        {
+          "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTlF4AwuO8cZelWw_BykZTz2u92hMo8Ho"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321594774742:android:c93219f781da8f39",
+        "android_client_info": {
+          "package_name": "rakshith.com.audioupload"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321594774742-2qius5lf16g7pphigags3bivt8e3m588.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rakshith.com.audioupload",
+            "certificate_hash": "4ae407054f6f19d16251e5bfae801df50dac7e05"
+          }
+        },
+        {
+          "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTlF4AwuO8cZelWw_BykZTz2u92hMo8Ho"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321594774742-ki41hfqbokcihs360mscdkp83phhspue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
