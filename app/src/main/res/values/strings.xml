@@ -5,4 +5,9 @@
     <string name="upload">Upload</string>
     <string name="play">Play</string>
     <string name="stop">Stop</string>
+    <string name="story_name">Story name</string>
+    <string name="error_story_name">Please enter Story name</string>
+    <string name="button_pick_image">Pick Image file</string>
+    <string name="button_capture_image">Capture</string>
+    <string name="upload_image">Upload Image</string>
 </resources>

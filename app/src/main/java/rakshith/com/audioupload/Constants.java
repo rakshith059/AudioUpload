@@ -20,6 +20,14 @@ public class Constants {
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String UPLOAD_AUDIO_URL = "https://api.mixcloud.com//upload/?access_token=";
     public static final String CALLBACK_INTENT_FILTER_RECIVER = "CALLBACK_INTENT_FILTER_RECIVER";
+    public static final int MAX_IMAGES = 4;
+
+    //for google vision API
+    public static String accessToken = "AIzaSyCiAJLcneiMwv33Kw8HvXStp8B5uiwpRGY";
+    public static final String VERIFY_OFFENSIVE_IMAGE_URL = "https://vision.googleapis.com/v1/images:annotate?key=" + accessToken;
+    public static final String SAFE_SEARCH_DETECTION = "SAFE_SEARCH_DETECTION";
+    public static final String VERY_UNLIKELY = "VERY_UNLIKELY";
+    public static final String UNLIKELY = "UNLIKELY";
 
     /**
      * Returns a shared preference value based on the key provided.
