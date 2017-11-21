@@ -27,11 +27,26 @@ import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.decoder.DecoderCounters
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.extractor.ExtractorsFactory
+import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.LoopingMediaSource
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.*
+import com.google.android.exoplayer2.upstream.BandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.video.VideoRendererEventListener
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -43,18 +58,43 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.OnProgressListener
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import com.google.gson.Gson
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.GlideEngine
 import com.zhihu.matisse.internal.entity.CaptureStrategy
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONArray
+import org.json.JSONObject
+import rakshith.com.audioupload.models.SafeResponse
+import rakshith.com.audioupload.utils.NetworkVolleyRequest
 import java.io.*
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.annotation.concurrent.Immutable
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, VideoRendererEventListener {
+    override fun onDroppedFrames(count: Int, elapsedMs: Long) {
+    }
+
+    override fun onVideoEnabled(counters: DecoderCounters?) {
+    }
+
+    override fun onVideoSizeChanged(width: Int, height: Int, unappliedRotationDegrees: Int, pixelWidthHeightRatio: Float) {
+    }
+
+    override fun onVideoDisabled(counters: DecoderCounters?) {
+    }
+
+    override fun onVideoDecoderInitialized(decoderName: String?, initializedTimestampMs: Long, initializationDurationMs: Long) {
+    }
+
+    override fun onVideoInputFormatChanged(format: Format?) {
+    }
+
+    override fun onRenderedFirstFrame(surface: Surface?) {
+    }
+
     internal var audioSavePath: String? = null
     internal var imagePath: String? = null
     internal var mediaRecorder: MediaRecorder? = null
@@ -63,6 +103,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     var firebaseStorageReference: StorageReference? = null
 
     var uploadedAudioUrl: String? = null
+
+    var simpleExoPlayer: SimpleExoPlayer? = null
 
     private val PICK_AUDIO: Int = 1001
     private val PICK_IMAGE: Int = 1002
@@ -83,6 +125,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         FirebaseApp.initializeApp(this);
 
         firebaseStorageReference = FirebaseStorage.getInstance().getReference()
+
+        var bandWidthMeter: BandwidthMeter = DefaultBandwidthMeter()
+        var trackSelectionFactory: TrackSelection.Factory = AdaptiveTrackSelection.Factory(bandWidthMeter)
+        var trackSelector: TrackSelector = DefaultTrackSelector(trackSelectionFactory)
+
+        var loadControl: LoadControl = DefaultLoadControl()
+        simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl)
+
+        activity_main_exo_player?.useController = true
+        activity_main_exo_player?.requestFocus()
+        activity_main_exo_player?.player = simpleExoPlayer
 
 //        LocalBroadcastManager.getInstance(this).registerReceiver(mCallbackReciver, IntentFilter(Constants.CALLBACK_INTENT_FILTER_RECIVER))
 
@@ -106,9 +159,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         activity_main_btn_upload.setOnClickListener(this)
         pick_button.setOnClickListener(this)
         pick_image_button.setOnClickListener(this)
-        activity_main_tv_download_url.setOnClickListener(this)
+//        activity_main_tv_download_url.setOnClickListener(this)
         capture_image_button.setOnClickListener(this)
         activity_main_iv_upload_image.setOnClickListener(this)
+
+        activity_main_fab_play?.setOnClickListener(this)
+        activity_main_fab_pause?.setOnClickListener(this)
     }
 
     /**
@@ -163,9 +219,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 activity_main_btn_upload?.isClickable = true
 
                 if (!TextUtils.isEmpty(audioSavePath)) {
-                    activity_main_ll_player.visibility = View.VISIBLE
+//                    activity_main_ll_player.visibility = View.VISIBLE
                     activity_main_btn_upload.visibility = View.VISIBLE
-                    streamAudioFromFirebase(audioSavePath as String)
+//                    streamAudioFromFirebase(audioSavePath as String)
                 }
 
                 Toast.makeText(this, "Recording Completed", Toast.LENGTH_LONG).show()
@@ -175,8 +231,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 activity_main_btn_record?.isClickable = true
                 activity_main_btn_stop?.isEnabled = false
                 activity_main_btn_stop?.isClickable = false
-                activity_main_btn_upload?.isEnabled = false
-                activity_main_btn_upload?.isClickable = false
 
                 var storyName: String? = activity_main_tie_story_name?.text.toString()
                 if (!TextUtils.isEmpty(storyName)) {
@@ -189,8 +243,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.pick_button -> {
                 pickAudioFileFromLocal()
             }
-            R.id.activity_main_tv_download_url -> {
-                streamAudioFromFirebase(uploadedAudioUrl as String)
+//            R.id.activity_main_tv_download_url -> {
+//                streamAudioFromFirebase(uploadedAudioUrl as String)
+//            }
+            R.id.activity_main_fab_play -> {
+                streamAudioFromFirebase(uploadedAudioUrl as String, true)
+                activity_main_fab_play.visibility = View.GONE
+                activity_main_fab_pause.visibility = View.VISIBLE
+            }
+            R.id.activity_main_fab_pause -> {
+                streamAudioFromFirebase(uploadedAudioUrl as String, false)
+                activity_main_fab_play.visibility = View.VISIBLE
+                activity_main_fab_pause.visibility = View.GONE
             }
             R.id.pick_image_button -> {
                 if (checkPermission()) {
@@ -226,17 +290,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
      * This method is used to pick the image from gallery
      */
     private fun pickImageFromGallery() {
-        Matisse.from(this@MainActivity)
-                .choose(MimeType.allOf())
-                .capture(true)
-                .captureStrategy(CaptureStrategy(true, "com.your.package.fileProvider"))
-                .countable(true)
-                .maxSelectable(Constants.MAX_IMAGES)
-                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.size_120dp))
-                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-                .thumbnailScale(0.85f)
-                .imageEngine(GlideEngine())
-                .forResult(PICK_IMAGE);
+//        Matisse.from(this@MainActivity)
+//                .choose(MimeType.allOf())
+//                .capture(true)
+//                .captureStrategy(CaptureStrategy(true, "com.your.package.fileProvider"))
+//                .countable(true)
+//                .maxSelectable(Constants.MAX_IMAGES)
+//                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.size_120dp))
+//                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+//                .thumbnailScale(0.85f)
+//                .imageEngine(GlideEngine())
+//                .forResult(PICK_IMAGE);
+
+        val pickIntent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        pickIntent.type = "*/*"
+        startActivityForResult(pickIntent, PICK_IMAGE)
 
 //        val intent = Intent()
 //        intent.type = "image/*"
@@ -333,13 +401,56 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 Log.d("Rakshith", "Uri from picking the audio file ==> " + uri)
 
                 if (uri != null) {
-                    activity_main_ll_player.visibility = View.VISIBLE
+//                    activity_main_ll_player.visibility = View.VISIBLE
                     activity_main_btn_upload.visibility = View.VISIBLE
 
                     activity_main_btn_upload.isEnabled = true
                     activity_main_btn_upload.isClickable = true
 
                     audioSavePath = uri.toString()
+
+                    //Measures bandwidth during playback. Can be null if not required.
+                    var bandwidthMeterA: DefaultBandwidthMeter = DefaultBandwidthMeter()
+                    //Produces DataSource instances through which media data is loaded.
+                    var dataSourceFactory: DefaultDataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, resources.getString(R.string.app_name)), bandwidthMeterA);
+                    //Produces Extractor instances for parsing the media data.
+                    var extractorsFactory: ExtractorsFactory = DefaultExtractorsFactory()
+
+                    var audioSource: MediaSource = ExtractorMediaSource(uri, dataSourceFactory, extractorsFactory, null, null)
+                    var loopingMediSource: MediaSource = LoopingMediaSource(audioSource)
+
+                    simpleExoPlayer?.prepare(loopingMediSource)
+                    simpleExoPlayer?.addListener(object : ExoPlayer.EventListener {
+                        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+                        }
+
+                        override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
+                        }
+
+                        override fun onPlayerError(error: ExoPlaybackException?) {
+                            (simpleExoPlayer as SimpleExoPlayer).stop();
+                            (simpleExoPlayer as SimpleExoPlayer).prepare(loopingMediSource);
+                            (simpleExoPlayer as SimpleExoPlayer).setPlayWhenReady(true);
+                        }
+
+                        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                        }
+
+                        override fun onLoadingChanged(isLoading: Boolean) {
+                        }
+
+                        override fun onPositionDiscontinuity() {
+                        }
+
+                        override fun onRepeatModeChanged(repeatMode: Int) {
+                        }
+
+                        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+                        }
+                    })
+
+                    simpleExoPlayer?.setPlayWhenReady(true); //run file/link when ready to play.
+                    simpleExoPlayer?.setVideoDebugListener(this); //for listening to resolution change and  outputing the resolution
 
                     activity_main_btn_play.setOnClickListener(View.OnClickListener {
                         var mediaPlayer: MediaPlayer = MediaPlayer()
@@ -357,11 +468,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
         } else if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
             // Get the Image from data
-            imageUris = Matisse.obtainResult(data)
-            uriAdapter?.setData(Matisse.obtainResult(data))
-//            var uri: Uri? = data?.data
-//            imagePath = uri?.toString()
-//            var inputStream: InputStream = this.getContentResolver().openInputStream(uri)
+//            imageUris = Matisse.obtainResult(data)
+//            uriAdapter?.setData(Matisse.obtainResult(data))
+            var uri: Uri? = data?.data
+            imagePath = uri?.toString()
+            var inputStream: InputStream = this.getContentResolver().openInputStream(uri)
+
+            var bitmap = BitmapFactory.decodeStream(inputStream)
+            activity_main_iv_image.setImageBitmap(bitmap)
 //            verifyAndDisplaySelectedImage(inputStream)
         }
 //        else if (requestCode == CAPTURE_IMAGE && resultCode == RESULT_OK && data != null) {
@@ -378,12 +492,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //        }
     }
 
-    private fun verifyAndDisplaySelectedImage(inputStream: InputStream) {
-        var bitmap = BitmapFactory.decodeStream(inputStream)
-        activity_main_iv_image.setImageBitmap(bitmap)
-
+//    public fun verifyAndDisplaySelectedImage(inputStream: InputStream) {
+//        var bitmap = BitmapFactory.decodeStream(inputStream)
+////        activity_main_iv_image.setImageBitmap(bitmap)
+//
 //        verifyImage(bitmap)
-    }
+//    }
 
     private var isSafeImage: Boolean = true
 
@@ -396,40 +510,42 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //
 //        var params = HashMap<String, String>()
 //
-////        var jsonFeatureTypeObject = JSONObject()
-////        var jsonFeatureTypeArray = JSONArray()
-////        var jsonContentObject = JSONObject()
-////        var jsonImageObject = JSONObject()
-////        var jsonRequestArray = JSONArray()
-////        var jsonRequestObject = JSONObject()
-////
-////        jsonFeatureTypeObject.put("type", Constants.SAFE_SEARCH_DETECTION)
-////        jsonFeatureTypeArray.put(jsonFeatureTypeObject)
-////
-////        var featureMap = HashMap<String, Any>()
-////        featureMap.put("features", jsonFeatureTypeArray)
-////
-////        jsonContentObject.put("content", encodedImage)
-////        jsonImageObject.put("image", jsonContentObject)
-////
-////        jsonRequestArray.put(jsonImageObject)
-////        jsonRequestArray.put(featureMap)
-////        jsonRequestObject.put("requests", jsonRequestArray)
+//        var jsonFeatureTypeObject = JSONObject()
+//        var jsonFeatureTypeArray = JSONArray()
+//        var jsonContentObject = JSONObject()
+//        var jsonImageObject = JSONObject()
+//        var jsonRequestArray = JSONArray()
+//        var jsonRequestObject = JSONObject()
 //
-//        var paramString = "{\n" +
-//                "\t\"requests\": [{\n" +
-//                "\t\t\"image\": {\n" +
-//                "\t\t\t\"content\": \"$encodedImage" +
-//                "\t\t},\n" +
-//                "\t\t\"features\": [{\n" +
-//                "\t\t\t\"type\": \"SAFE_SEARCH_DETECTION\"\n" +
-//                "\t\t}]\n" +
-//                "\t}]\n" +
-//                "}"
+//        jsonFeatureTypeObject.put("type", Constants.SAFE_SEARCH_DETECTION)
+//        jsonFeatureTypeArray.put(jsonFeatureTypeObject)
 //
-//        params.put("body", paramString)
+//        var featureMap = HashMap<String, Any>()
+//        featureMap.put("features", jsonFeatureTypeArray)
 //
-//        Log.d("Rakshith", "json request for safe search => " + paramString)
+//        jsonContentObject.put("content", encodedImage)
+//        jsonImageObject.put("image", jsonContentObject)
+//
+//        jsonRequestArray.put(jsonImageObject)
+//        jsonRequestArray.put(featureMap)
+//        jsonRequestObject.put("requests", jsonRequestArray)
+//
+////        var paramString = "{\n" +
+////                "\t\"requests\": [{\n" +
+////                "\t\t\"image\": {\n" +
+////                "\t\t\t\"content\": \"$encodedImage" +
+////                "\t\t},\n" +
+////                "\t\t\"features\": [{\n" +
+////                "\t\t\t\"type\": \"SAFE_SEARCH_DETECTION\"\n" +
+////                "\t\t}]\n" +
+////                "\t}]\n" +
+////                "}"
+////
+////        params.put("body", paramString)
+////
+////        Log.d("Rakshith", "json request for safe search => " + paramString)
+//
+//        params.put("body", jsonRequestObject.toString())
 //
 //        var safeSearchRequest = NetworkVolleyRequest(NetworkVolleyRequest.RequestMethod.POST, Constants.VERIFY_OFFENSIVE_IMAGE_URL, String::class.java, params, HashMap<String, Any>(), object : NetworkVolleyRequest.Callback<Any> {
 //            override fun onSuccess(response: Any) {
@@ -456,7 +572,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //    }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun streamAudioFromFirebase(url: String) {
+    private fun streamAudioFromFirebase(url: String, play: Boolean) {
         if (!TextUtils.isEmpty(url)) {
             var mediaPlayer: MediaPlayer = MediaPlayer()
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
@@ -464,7 +580,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             mediaPlayer.prepare() // might take long! (for buffering, etc)
 
             Log.d("Rakshith", "duration of the audio file ==> " + mediaPlayer.duration)
-            mediaPlayer.start()
+            if (play) {
+                mediaPlayer.start()
+            } else {
+                if (mediaPlayer.isPlaying)
+                    mediaPlayer.pause()
+            }
         }
     }
 
@@ -481,7 +602,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         Toast.makeText(this@MainActivity, result.downloadUrl.toString(), Toast.LENGTH_SHORT).show()
 
                         uploadedAudioUrl = result?.downloadUrl?.toString()
-                        activity_main_tv_download_url.text = result?.downloadUrl?.toString()
+
+
+                        activity_main_btn_upload?.isEnabled = false
+                        activity_main_btn_upload?.isClickable = false
+
+                        activity_main_ll_uploading.visibility = View.VISIBLE
+                        activity_main_tv_upload_story_name?.text = storyName
+//                        activity_main_tv_download_url.text = result?.downloadUrl?.toString()
                     }
                 })?.addOnFailureListener(object : OnFailureListener {
             override fun onFailure(exception: Exception) {
@@ -510,7 +638,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     Log.d("Rakshith", "failure ==> " + exception?.message)
                 }
             })
-
         }
     }
 
@@ -587,12 +714,89 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 getScaledBitmap(bitmap, 400F, 400F)
                 holder?.mImage?.setImageBitmap(bitmap)
+
+                verifyImage(bitmap)
             } catch (e: FileNotFoundException) {
                 return
             }
-
 //            holder?.mUri.alpha = if (position % 2 == 0) 1.0f else 0.54f
         }
+
+        private fun verifyImage(bitmap: Bitmap) {
+            var byteArrayOutputStream: ByteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            var byteArray: ByteArray? = byteArrayOutputStream.toByteArray()
+
+            var encodedImage = android.util.Base64.encodeToString(byteArray, android.util.Base64.DEFAULT)
+
+            var params = HashMap<String, String>()
+
+            var jsonFeatureTypeObject = JSONObject()
+            var jsonFeatureTypeArray = JSONArray()
+            var jsonContentObject = JSONObject()
+            var jsonImageObject = JSONObject()
+            var jsonRequestArray = JSONArray()
+            var jsonRequestObject = JSONObject()
+
+            jsonFeatureTypeObject.put("type", Constants.SAFE_SEARCH_DETECTION)
+            jsonFeatureTypeArray.put(jsonFeatureTypeObject)
+
+//            var featureMap = HashMap<String, Any>()
+//            featureMap.put("features", jsonFeatureTypeArray)
+
+//            var jsonFeatureObject = JSONObject()
+//            jsonFeatureObject.put("features", jsonFeatureTypeArray)
+
+            jsonContentObject.put("content", encodedImage)
+            jsonImageObject.put("image", jsonContentObject)
+            jsonImageObject.put("features", jsonFeatureTypeArray)
+
+            jsonRequestArray.put(jsonImageObject)
+//            jsonRequestArray.put(jsonFeatureObject)
+            jsonRequestObject.put("requests", jsonRequestArray)
+
+//        var paramString = "{\n" +
+//                "\t\"requests\": [{\n" +
+//                "\t\t\"image\": {\n" +
+//                "\t\t\t\"content\": \"$encodedImage" +
+//                "\t\t},\n" +
+//                "\t\t\"features\": [{\n" +
+//                "\t\t\t\"type\": \"SAFE_SEARCH_DETECTION\"\n" +
+//                "\t\t}]\n" +
+//                "\t}]\n" +
+//                "}"
+//
+//        params.put("body", paramString)
+//
+//        Log.d("Rakshith", "json request for safe search => " + paramString)
+
+            params.put("body", jsonRequestObject.toString())
+
+            var safeSearchRequest = NetworkVolleyRequest(NetworkVolleyRequest.RequestMethod.POST, Constants.VERIFY_OFFENSIVE_IMAGE_URL, String::class.java, HashMap<String, String>(), params, object : NetworkVolleyRequest.Callback<Any> {
+                override fun onSuccess(response: Any) {
+                    Log.d("Rakshith", "success response==" + response.toString())
+                    var gson: Gson = Gson()
+                    var safeResponseJson = gson.fromJson(response as String, SafeResponse::class.java)
+
+                    var adultContent: String? = safeResponseJson?.responses?.get(0)?.safeSearchAnnotation?.adult as String
+                    var violentContent: String? = safeResponseJson?.responses?.get(0)?.safeSearchAnnotation?.violence as String
+
+
+                    if (adultContent?.equals(Constants.VERY_UNLIKELY) as Boolean && adultContent?.equals(Constants.UNLIKELY) ||
+                            violentContent?.equals(Constants.VERY_UNLIKELY) as Boolean && violentContent?.equals(Constants.UNLIKELY)) {
+//                        isSafeImage = true
+                    }
+//                    else isSafeImage = false
+                }
+
+                override fun onError(errorCode: Int, errorMessage: String) {
+                    Log.d("Rakshith", "failure response ==> " + errorCode.toString() + "error message ==> " + errorMessage)
+                }
+            }, NetworkVolleyRequest.ContentType.JSON)
+
+            safeSearchRequest.execute()
+        }
+
 
         private fun getScaledBitmap(bitmap: Bitmap?, reqWidth: Float, reqHeight: Float): Bitmap {
             var matrix: Matrix = Matrix()

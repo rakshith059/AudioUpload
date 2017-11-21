@@ -151,7 +151,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/size_200dp"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
+
+                    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+                        android:id="@+id/activity_main_exo_player"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                     <Button
                         android:id="@+id/activity_main_btn_play"
@@ -163,10 +168,57 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/activity_main_tv_download_url"
+                <LinearLayout
+                    android:id="@+id/activity_main_ll_uploading"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="@dimen/size_100dp"
+                    android:layout_margin="@dimen/size_10dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/activity_main_tv_upload_story_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:ellipsize="middle"
+                            android:maxLines="2"
+                            android:text="@string/story_name"
+                            android:textColor="@color/colorPrimary" />
+
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/activity_main_fab_play"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_margin="@dimen/size_5dp"
+                            android:src="@android:drawable/ic_media_play"
+                            android:visibility="visible" />
+
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/activity_main_fab_pause"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_margin="@dimen/size_5dp"
+                            android:src="@android:drawable/ic_media_pause"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="@dimen/size_100dp"
+                        android:layout_height="@dimen/size_100dp"
+                        android:layout_gravity="center|end"
+                        android:src="@drawable/icon_quintype" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -214,7 +266,7 @@
                         android:textAppearance="?android:textAppearanceLarge"
                         android:textColorHint="#c00"
                         android:textStyle="bold"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <ImageView
@@ -222,7 +274,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/size_200dp"
                     android:src="@drawable/ic_launcher_background"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerview"

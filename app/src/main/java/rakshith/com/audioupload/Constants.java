@@ -20,7 +20,7 @@ public class Constants {
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String UPLOAD_AUDIO_URL = "https://api.mixcloud.com//upload/?access_token=";
     public static final String CALLBACK_INTENT_FILTER_RECIVER = "CALLBACK_INTENT_FILTER_RECIVER";
-    public static final int MAX_IMAGES = 4;
+    public static final int MAX_IMAGES = 1;
 
     //for google vision API
     public static String accessToken = "AIzaSyCiAJLcneiMwv33Kw8HvXStp8B5uiwpRGY";

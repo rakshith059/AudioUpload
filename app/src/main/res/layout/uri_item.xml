@@ -20,11 +20,11 @@
         android:visibility="gone"
         tools:text="content://media/external/images/media/12345"
         tools:textColor="@android:color/black" />
-    
+
     <ImageView
         android:id="@+id/uri_item_iv_image"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/size_120dp"
+        android:layout_height="@dimen/size_150dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:src="@drawable/ic_launcher_background" />
